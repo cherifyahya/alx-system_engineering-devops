@@ -1,30 +1,36 @@
 #!/usr/bin/python3
-"""Module task 2."""
+"""import requests"""
 import requests
 
 
-def recurse(subreddit, hot_list=[], after="", count=0):
-    """Returns titles of all hot posts on a given subreddit."""
-    url = "https://www.reddit.com/r/{}/hot/.json".format(subreddit)
+def top_page_post(subreddit, after=None):
+    """top 10 post in a subreddit"""
+    url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
+
+    if after:
+        url += f'&after={after}'
+
     headers = {
-                "User-Agent": "My-User-Agent"
+        'User-Agent': 'alxapp/1.0 (by /u/oussamaelhadraoui777)'
     }
-    params = {
-        "after": after,
-        "count": count,
-        "limit": 100
-    }
-    response = requests.get(url, headers=headers, params=params,
-                            allow_redirects=False)
+
+    response = requests.get(url, headers=headers)
     if response.status_code == 404:
+        return None, None
+    else:
+        data = response.json().get("data")
+        return data.get('children'), data.get('after')
+
+
+def recurse(subreddit, hot_list=[], after=None):
+    """all post for subreddit"""
+    posts, after = top_page_post(subreddit, after)
+    if posts is not None:
+        for post in posts:
+            hot_list.append(post['data']['title'])
+        if after:
+            recurse(subreddit, hot_list, after)
+    if len(hot_list) == 0:
         return None
-
-    results = response.json().get("data")
-    after = results.get("after")
-    count += results.get("dist")
-    for r in results.get("children"):
-        hot_list.append(r.get("data").get("title"))
-
-    if after is not None:
-        return recurse(subreddit, hot_list, after, count)
-    return hot_list
+    else:
+        return hot_list
