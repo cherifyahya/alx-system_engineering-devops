@@ -7,7 +7,7 @@ def number_of_subscribers(subreddit):
     "number_of_subscribers of a subreddit"
     url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
     headers = {
-        'User-Agent': 'alxapp/1.0 (by /u/yahyapitsho)'
+        'User-Agent': 'alxapp/1.0 (by yahya pitsho)'
     }
     response = requests.get(url, headers=headers, allow_redirects=False)
     if response.status_code == 404:
