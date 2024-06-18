@@ -1,18 +1,17 @@
 #!/usr/bin/python3
-"""Module for task 0."""
+"""Function to print hot posts on a given Reddit subreddit."""
 import requests
 
 
-def number_of_subscribers(subreddit):
-    """Return the number of subscribers on a given subreddit."""
-    url = 'https://www.reddit.com/r/{}/about.json'.format(subreddit)
+def top_ten(subreddit):
+    """Print the titles of the 10 hottest posts on a given subreddit."""
+    url = "https://www.reddit.com/r/{}/hot/.json?limit=10".format(subreddit)
     headers = {
-        "User-Agent": "My-User-Agent"
+        'User-Agent': 'alxapp/1.0 (by /u/SimoPablo)'
     }
     response = requests.get(url, headers=headers, allow_redirects=False)
     if response.status_code == 404:
-        return 0
-    else:
-        results = response.json()
-        subscribers = results.get('data')['subscribers']
-        return subscribers
+        print("None")
+        return
+    results = response.json().get("data")
+    [print(c.get("data").get("title")) for c in results.get("children")]
